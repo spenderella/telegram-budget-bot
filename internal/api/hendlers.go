@@ -3,13 +3,16 @@ package api
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 // / Обработка входящих сообщений
 func (bot *BudgetBot) handleMessage(update *tgbotapi.Update) {
-	switch update.Message.Text {
+	command := strings.ToLower(update.Message.Text)
+
+	switch command {
 	case "/start":
 		bot.commandStart(update)
 	case "/help":
