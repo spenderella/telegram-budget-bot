@@ -7,30 +7,47 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// Обработчик команды /start
-func handleStart(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
-	text := fmt.Sprintf("Hello, %s! This bot will count your expenses!", update.Message.From.UserName)
-	sendReply(bot, update, text)
+// / Обработка входящих сообщений
+func (bot *BudgetBot) handleMessage(update *tgbotapi.Update) {
+	switch update.Message.Text {
+	case "/start":
+		bot.commandStart(update)
+	case "/help":
+		bot.commandHelp(update)
+	default:
+		bot.commandUnknown(update)
+	}
 }
 
-// Обработчик команды /help
-func handleHelp(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
+// Команда /start
+func (bot *BudgetBot) commandStart(update *tgbotapi.Update) {
+	username := update.Message.From.UserName
+	if username == "" {
+		username = update.Message.From.FirstName
+	}
+
+	text := fmt.Sprintf("Hello, %s! I'll help you track your budget!", username)
+	bot.sendReply(update, text)
+}
+
+// Команда /help
+func (bot *BudgetBot) commandHelp(update *tgbotapi.Update) {
 	text := "Available commands:\n/start - Welcome message\n/help - Show this help"
-	sendReply(bot, update, text)
+	bot.sendReply(update, text)
 }
 
-// Обработчик неизвестных команд
-func handleUnknown(bot *tgbotapi.BotAPI, update *tgbotapi.Update) {
+// Неизвестная команда
+func (bot *BudgetBot) commandUnknown(update *tgbotapi.Update) {
 	text := "Sorry, I don't know this command. Use /help"
-	sendReply(bot, update, text)
+	bot.sendReply(update, text)
 }
 
-// Функция отправки ответа
-func sendReply(bot *tgbotapi.BotAPI, update *tgbotapi.Update, text string) {
+// Отправка ответа
+func (bot *BudgetBot) sendReply(update *tgbotapi.Update, text string) {
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 	msg.ReplyToMessageID = update.Message.MessageID
 
-	_, err := bot.Send(msg)
+	_, err := bot.api.Send(msg)
 	if err != nil {
 		log.Printf("Error sending message: %v", err)
 	}

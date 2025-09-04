@@ -13,5 +13,10 @@ func main() {
 		log.Fatal("BOT_TOKEN environment variable is not set")
 	}
 
-	api.StartBot(token)
+	bot, err := api.NewBudgetBot(token)
+	if err != nil {
+		log.Fatal("Failed to create bot:", err)
+	}
+
+	bot.Start()
 }
