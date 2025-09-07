@@ -5,47 +5,68 @@ import (
 	"log"
 	"strings"
 
+	"time"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// / Обработка входящих сообщений
 func (bot *BudgetBot) handleMessage(update *tgbotapi.Update) {
-	command := strings.ToLower(update.Message.Text)
+	parts := strings.Fields(update.Message.Text)
+	command := strings.ToLower(parts[0])
 
 	switch command {
 	case "/start":
 		bot.commandStart(update)
 	case "/help":
 		bot.commandHelp(update)
+	case "/add_expense":
+		bot.commandAddExpense(update)
 	default:
 		bot.commandUnknown(update)
 	}
 }
 
-// Команда /start
 func (bot *BudgetBot) commandStart(update *tgbotapi.Update) {
 	username := update.Message.From.UserName
 	if username == "" {
 		username = update.Message.From.FirstName
 	}
 
-	text := fmt.Sprintf("Hello, %s! I'll help you track your budget!", username)
+	text := fmt.Sprintf(StartMessage, username)
 	bot.sendReply(update, text)
 }
 
-// Команда /help
 func (bot *BudgetBot) commandHelp(update *tgbotapi.Update) {
-	text := "Available commands:\n/start - Welcome message\n/help - Show this help"
+	text := HelpMessage
 	bot.sendReply(update, text)
 }
 
-// Неизвестная команда
+func (bot *BudgetBot) commandAddExpense(update *tgbotapi.Update) {
+
+	userTime := time.Unix(int64(update.Message.Date), 0)
+	userID := update.Message.From.ID
+
+	amount, category, err := parseAddExpenseCommand(update.Message.Text)
+	if err != nil {
+		bot.sendReply(update, err.Error())
+		return
+	}
+
+	err = bot.expenseService.AddExpense(userID, amount, category, userTime)
+	if err != nil {
+		bot.sendReply(update, "Failed to save expense. Please try again later.")
+		return
+	}
+
+	bot.sendReply(update, "Expense saved successfully!")
+
+}
+
 func (bot *BudgetBot) commandUnknown(update *tgbotapi.Update) {
 	text := "Sorry, I don't know this command. Use /help"
 	bot.sendReply(update, text)
 }
 
-// Отправка ответа
 func (bot *BudgetBot) sendReply(update *tgbotapi.Update, text string) {
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 	msg.ReplyToMessageID = update.Message.MessageID

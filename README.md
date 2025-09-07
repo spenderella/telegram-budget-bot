@@ -36,5 +36,6 @@ Available commands:
 
 /start - Welcome message
 /help - Show available commands
+/add_expense <amount> <category> - Add new expense with amount and category
 
 
