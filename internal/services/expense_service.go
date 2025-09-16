@@ -10,13 +10,7 @@ import (
 )
 
 type ExpenseService struct {
-	repository *repositories.ExpenseRepository
-}
-
-func NewExpenseService(repo *repositories.ExpenseRepository) *ExpenseService {
-	return &ExpenseService{
-		repository: repo,
-	}
+	Repository *repositories.ExpenseRepository
 }
 
 func (s *ExpenseService) AddExpense(userID int64, amount float64, category string, date time.Time) error {
@@ -31,7 +25,7 @@ func (s *ExpenseService) AddExpense(userID int64, amount float64, category strin
 		Currency: currency,
 	}
 
-	err := s.repository.Save(expense)
+	err := s.Repository.Save(expense)
 	if err != nil {
 		log.Printf("Error saving expense for user %d: %v", userID, err)
 		return fmt.Errorf("failed to save expense: %w", err)

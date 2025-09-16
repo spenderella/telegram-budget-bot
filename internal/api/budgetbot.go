@@ -3,7 +3,7 @@ package api
 import (
 	"log"
 
-	"telegram-finance-bot/internal/repositories"
+	//"telegram-finance-bot/internal/repositories"
 	"telegram-finance-bot/internal/services"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -17,14 +17,11 @@ type BudgetBot struct {
 }
 
 // Конструктор
-func NewBudgetBot(token string) (*BudgetBot, error) {
+func NewBudgetBot(token string, expenseService *services.ExpenseService) (*BudgetBot, error) {
 	botAPI, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		return nil, err
 	}
-
-	expenseRepo := repositories.NewExpenseRepository()
-	expenseService := services.NewExpenseService(expenseRepo)
 
 	return &BudgetBot{
 		token:          token,

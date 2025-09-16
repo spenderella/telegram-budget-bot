@@ -7,27 +7,21 @@ import (
 )
 
 type ExpenseRepository struct {
-	expenses map[int64][]models.Expense // userID -> список трат
-}
-
-func NewExpenseRepository() *ExpenseRepository {
-	return &ExpenseRepository{
-		expenses: make(map[int64][]models.Expense),
-	}
+	Expenses map[int64][]models.Expense // userID -> список трат
 }
 
 func (r *ExpenseRepository) Save(expense models.Expense) error {
 
-	if r.expenses[expense.UserID] == nil {
+	if r.Expenses[expense.UserID] == nil {
 		log.Printf("Creating new slice for user %d", expense.UserID)
-		r.expenses[expense.UserID] = []models.Expense{}
+		r.Expenses[expense.UserID] = []models.Expense{}
 	}
 
-	r.expenses[expense.UserID] = append(r.expenses[expense.UserID], expense)
+	r.Expenses[expense.UserID] = append(r.Expenses[expense.UserID], expense)
 
 	log.Printf("=== AFTER SAVE ===")
-	log.Printf("Length after: %d", len(r.expenses[expense.UserID]))
-	log.Printf("All expenses: %v", r.expenses[expense.UserID])
+	log.Printf("Length after: %d", len(r.Expenses[expense.UserID]))
+	log.Printf("All expenses: %v", r.Expenses[expense.UserID])
 
 	return nil
 }
