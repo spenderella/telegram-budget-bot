@@ -15,8 +15,7 @@ type ExpenseService struct {
 
 func (s *ExpenseService) AddExpense(userID int64, amount float64, category string, date time.Time) error {
 
-	currency := "RUB" //TBD: currency from user's settings or message
-
+	currency := defaultCurrency
 	expense := models.Expense{
 		UserID:   userID,
 		Amount:   amount,
