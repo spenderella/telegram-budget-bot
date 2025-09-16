@@ -2,18 +2,19 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"telegram-finance-bot/internal/api"
+	"telegram-finance-bot/internal/configs"
 	"telegram-finance-bot/internal/models"
 	"telegram-finance-bot/internal/repositories"
 	"telegram-finance-bot/internal/services"
 )
 
 func main() {
-	token := os.Getenv("BOT_TOKEN")
-	if token == "" {
-		log.Fatal("BOT_TOKEN environment variable is not set")
+	config, err := configs.LoadConfig("internal/configs/configs.json")
+
+	if err != nil {
+		log.Fatal("Failed to read configs:", err)
 	}
 
 	ER := repositories.ExpenseRepository{
@@ -23,7 +24,7 @@ func main() {
 		Repository: &ER,
 	}
 
-	bot, err := api.NewBudgetBot(token, &ES)
+	bot, err := api.NewBudgetBot(config, &ES)
 	if err != nil {
 		log.Fatal("Failed to create bot:", err)
 	}
