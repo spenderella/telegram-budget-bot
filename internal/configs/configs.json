@@ -1,3 +1,4 @@
 {
-    "polling_timeout": 60
+    "polling_timeout": 60,
+    "get_expense_limit": 50
 }

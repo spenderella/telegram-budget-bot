@@ -31,3 +31,12 @@ func (s *ExpenseService) AddExpense(userID int64, amount float64, category strin
 	}
 	return nil
 }
+
+func (s *ExpenseService) GetExpenses(filter models.ExpenseFilter) ([]models.Expense, error) {
+	expenses, err := s.Repository.GetExpenses(filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get expenses: %w", err)
+	}
+
+	return expenses, nil
+}

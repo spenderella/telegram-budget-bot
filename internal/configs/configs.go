@@ -6,9 +6,15 @@ import (
 	"os"
 )
 
+const (
+	MaxGetExpensesLimit = 500
+)
+
 type Config struct {
-	BotToken       string `json:"-"`               // из env
-	PollingTimeout int    `json:"polling_timeout"` // из файла
+	BotToken        string `json:"-"`                 // from env
+	PollingTimeout  int    `json:"polling_timeout"`   // from file
+	GetExpenseLimit int    `json:"get_expense_limit"` // from file
+
 }
 
 func LoadConfig(configPath string) (*Config, error) {
@@ -31,6 +37,14 @@ func LoadConfig(configPath string) (*Config, error) {
 
 	if config.PollingTimeout <= 0 {
 		return nil, fmt.Errorf("polling_timeout must be positive")
+	}
+
+	if config.GetExpenseLimit <= 0 {
+		return nil, fmt.Errorf("get_expense_limit must be positive")
+	}
+
+	if config.GetExpenseLimit > MaxGetExpensesLimit {
+		return nil, fmt.Errorf("get_expense_limit must be less than %d", MaxGetExpensesLimit)
 	}
 
 	return &config, nil

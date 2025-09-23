@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"telegram-finance-bot/internal/models"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -21,6 +22,8 @@ func (bot *BudgetBot) handleMessage(update *tgbotapi.Update) {
 		bot.commandHelp(update)
 	case "/add_expense":
 		bot.commandAddExpense(update)
+	case "/get_expenses":
+		bot.commandGetExpenses(update)
 	default:
 		bot.commandUnknown(update)
 	}
@@ -59,6 +62,25 @@ func (bot *BudgetBot) commandAddExpense(update *tgbotapi.Update) {
 	}
 
 	bot.sendReply(update, "Expense saved successfully!")
+
+}
+
+func (bot *BudgetBot) commandGetExpenses(update *tgbotapi.Update) {
+
+	userID := update.Message.From.ID
+	filter := models.ExpenseFilter{
+		UserID: userID,
+		Limit:  &bot.config.GetExpenseLimit,
+	}
+
+	expenses, err := bot.expenseService.GetExpenses(filter)
+	if err != nil {
+		bot.sendReply(update, "Error getting expenses: "+err.Error())
+		return
+	}
+
+	text := bot.formatExpenses(expenses)
+	bot.sendReply(update, text)
 
 }
 

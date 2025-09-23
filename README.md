@@ -6,7 +6,8 @@ Personal finance tracking bot for Telegram built with Go.
 
 ## Features
 
-- TBD
+- Add expense: amount and category
+- Get your expenses
 
 ## Prerequisites
 
@@ -37,5 +38,6 @@ Available commands:
 /start - Welcome message
 /help - Show available commands
 /add_expense <amount> <category> - Add new expense with amount and category
+/get_expences - Get your expenses (limit 50)
 
 

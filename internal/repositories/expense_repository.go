@@ -25,3 +25,23 @@ func (r *ExpenseRepository) Save(expense models.Expense) error {
 
 	return nil
 }
+
+func (r *ExpenseRepository) GetExpenses(filter models.ExpenseFilter) ([]models.Expense, error) {
+	userExpenses, exists := r.Expenses[filter.UserID]
+
+	if !exists {
+		return []models.Expense{}, nil
+	}
+
+	var result []models.Expense
+
+	for _, expense := range userExpenses {
+
+		result = append(result, expense)
+
+		if filter.Limit == nil || len(result) >= *filter.Limit {
+			break
+		}
+	}
+	return result, nil
+}
