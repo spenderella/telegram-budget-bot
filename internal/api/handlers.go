@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"log"
 	"strings"
-
-	"telegram-finance-bot/internal/models"
-	"time"
+	//"telegram-finance-bot/internal/models"
+	"telegram-finance-bot/internal/constants"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -16,13 +15,13 @@ func (bot *BudgetBot) handleMessage(update *tgbotapi.Update) {
 	command := strings.ToLower(parts[0])
 
 	switch command {
-	case "/start":
+	case constants.CmdStart:
 		bot.commandStart(update)
-	case "/help":
+	case constants.CmdHelp:
 		bot.commandHelp(update)
-	case "/add_expense":
+	case constants.CmdAddExpense:
 		bot.commandAddExpense(update)
-	case "/get_expenses":
+	case constants.CmdGetExpenses:
 		bot.commandGetExpenses(update)
 	default:
 		bot.commandUnknown(update)
@@ -35,53 +34,13 @@ func (bot *BudgetBot) commandStart(update *tgbotapi.Update) {
 		username = update.Message.From.FirstName
 	}
 
-	text := fmt.Sprintf(StartMessage, username)
+	text := fmt.Sprintf(constants.StartMessage, username)
 	bot.sendReply(update, text)
 }
 
 func (bot *BudgetBot) commandHelp(update *tgbotapi.Update) {
-	text := HelpMessage
+	text := constants.HelpMessage
 	bot.sendReply(update, text)
-}
-
-func (bot *BudgetBot) commandAddExpense(update *tgbotapi.Update) {
-
-	userTime := time.Unix(int64(update.Message.Date), 0)
-	userID := update.Message.From.ID
-
-	amount, category, err := parseAddExpenseCommand(update.Message.Text)
-	if err != nil {
-		bot.sendReply(update, err.Error())
-		return
-	}
-
-	err = bot.expenseService.AddExpense(userID, amount, category, userTime)
-	if err != nil {
-		bot.sendReply(update, "Failed to save expense. Please try again later.")
-		return
-	}
-
-	bot.sendReply(update, "Expense saved successfully!")
-
-}
-
-func (bot *BudgetBot) commandGetExpenses(update *tgbotapi.Update) {
-
-	userID := update.Message.From.ID
-	filter := models.ExpenseFilter{
-		UserID: userID,
-		Limit:  &bot.config.GetExpenseLimit,
-	}
-
-	expenses, err := bot.expenseService.GetExpenses(filter)
-	if err != nil {
-		bot.sendReply(update, "Error getting expenses: "+err.Error())
-		return
-	}
-
-	text := bot.formatExpenses(expenses)
-	bot.sendReply(update, text)
-
 }
 
 func (bot *BudgetBot) commandUnknown(update *tgbotapi.Update) {

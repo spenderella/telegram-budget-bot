@@ -19,7 +19,6 @@ type BudgetBot struct {
 	expenseService *services.ExpenseService
 }
 
-// Конструктор
 func NewBudgetBot(config *configs.Config, expenseService *services.ExpenseService) (*BudgetBot, error) {
 	botAPI, err := tgbotapi.NewBotAPI(config.BotToken)
 	if err != nil {

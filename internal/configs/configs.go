@@ -2,8 +2,9 @@ package configs
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
+
+	"telegram-finance-bot/internal/errors"
 )
 
 const (
@@ -20,31 +21,31 @@ type Config struct {
 func LoadConfig(configPath string) (*Config, error) {
 	file, err := os.Open(configPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open config file: %w", err)
+		return nil, errors.ErrFailedToOpenConfig(err)
 	}
 	defer file.Close()
 
 	var config Config
 	decoder := json.NewDecoder(file)
 	if err := decoder.Decode(&config); err != nil {
-		return nil, fmt.Errorf("failed to decode config: %w", err)
+		return nil, errors.ErrFailedToDecodeConfig(err)
 	}
 
 	config.BotToken = os.Getenv("BOT_TOKEN")
 	if config.BotToken == "" {
-		return nil, fmt.Errorf("BOT_TOKEN environment variable is not set")
+		return nil, errors.ErrBotTokenMissing
 	}
 
 	if config.PollingTimeout <= 0 {
-		return nil, fmt.Errorf("polling_timeout must be positive")
+		return nil, errors.ErrInvalidPollingTimeout
 	}
 
 	if config.GetExpenseLimit <= 0 {
-		return nil, fmt.Errorf("get_expense_limit must be positive")
+		return nil, errors.ErrInvalidGetExpenseLimit
 	}
 
 	if config.GetExpenseLimit > MaxGetExpensesLimit {
-		return nil, fmt.Errorf("get_expense_limit must be less than %d", MaxGetExpensesLimit)
+		return nil, errors.ErrGetExpenseLimitTooLarge(config.GetExpenseLimit, MaxGetExpensesLimit)
 	}
 
 	return &config, nil

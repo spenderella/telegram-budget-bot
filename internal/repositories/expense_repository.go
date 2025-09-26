@@ -10,6 +10,12 @@ type ExpenseRepository struct {
 	Expenses map[int64][]models.Expense // userID -> список трат
 }
 
+func NewExpenseRepository() *ExpenseRepository {
+	return &ExpenseRepository{
+		Expenses: make(map[int64][]models.Expense),
+	}
+}
+
 func (r *ExpenseRepository) Save(expense models.Expense) error {
 
 	if r.Expenses[expense.UserID] == nil {

@@ -1,16 +1,22 @@
 package services
 
 import (
-	"fmt"
 	"log"
 	"time"
 
+	"telegram-finance-bot/internal/errors"
 	"telegram-finance-bot/internal/models"
 	"telegram-finance-bot/internal/repositories"
 )
 
 type ExpenseService struct {
 	Repository *repositories.ExpenseRepository
+}
+
+func NewExpenseService(repository *repositories.ExpenseRepository) *ExpenseService {
+	return &ExpenseService{
+		Repository: repository,
+	}
 }
 
 func (s *ExpenseService) AddExpense(userID int64, amount float64, category string, date time.Time) error {
@@ -27,7 +33,7 @@ func (s *ExpenseService) AddExpense(userID int64, amount float64, category strin
 	err := s.Repository.Save(expense)
 	if err != nil {
 		log.Printf("Error saving expense for user %d: %v", userID, err)
-		return fmt.Errorf("failed to save expense: %w", err)
+		return errors.ErrFailedToSaveExpenses(err)
 	}
 	return nil
 }
@@ -35,7 +41,7 @@ func (s *ExpenseService) AddExpense(userID int64, amount float64, category strin
 func (s *ExpenseService) GetExpenses(filter models.ExpenseFilter) ([]models.Expense, error) {
 	expenses, err := s.Repository.GetExpenses(filter)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get expenses: %w", err)
+		return nil, errors.ErrFailedToGetExpenses(err)
 	}
 
 	return expenses, nil

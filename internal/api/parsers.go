@@ -1,9 +1,10 @@
 package api
 
 import (
-	"errors"
 	"strconv"
 	"strings"
+	"telegram-finance-bot/internal/constants"
+	"telegram-finance-bot/internal/errors"
 )
 
 func parseAddExpenseCommand(text string) (float64, string, error) {
@@ -11,16 +12,16 @@ func parseAddExpenseCommand(text string) (float64, string, error) {
 	parts := strings.Fields(text)
 
 	if len(parts) < 3 {
-		return 0, "", errors.New("invalid format. Use: /add_expense <amount> <category>")
+		return 0, "", errors.ErrInvalidCommandFormat(constants.CmdAddExpense)
 	}
 
 	amount, err := strconv.ParseFloat(parts[1], 64)
 	if err != nil {
-		return 0, "", errors.New("invalid amount format")
+		return 0, "", errors.ErrInvalidAmountFormat
 	}
 
 	if amount <= 0 {
-		return 0, "", errors.New("amount must be positive")
+		return 0, "", errors.ErrAmountMustBePositive
 	}
 
 	category := strings.Join(parts[2:], " ")
