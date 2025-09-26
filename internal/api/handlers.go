@@ -4,48 +4,50 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	//"telegram-finance-bot/internal/models"
+	"telegram-finance-bot/internal/constants"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// / Обработка входящих сообщений
 func (bot *BudgetBot) handleMessage(update *tgbotapi.Update) {
-	command := strings.ToLower(update.Message.Text)
+	parts := strings.Fields(update.Message.Text)
+	command := strings.ToLower(parts[0])
 
 	switch command {
-	case "/start":
+	case constants.CmdStart:
 		bot.commandStart(update)
-	case "/help":
+	case constants.CmdHelp:
 		bot.commandHelp(update)
+	case constants.CmdAddExpense:
+		bot.commandAddExpense(update)
+	case constants.CmdGetExpenses:
+		bot.commandGetExpenses(update)
 	default:
 		bot.commandUnknown(update)
 	}
 }
 
-// Команда /start
 func (bot *BudgetBot) commandStart(update *tgbotapi.Update) {
 	username := update.Message.From.UserName
 	if username == "" {
 		username = update.Message.From.FirstName
 	}
 
-	text := fmt.Sprintf("Hello, %s! I'll help you track your budget!", username)
+	text := fmt.Sprintf(constants.StartMessage, username)
 	bot.sendReply(update, text)
 }
 
-// Команда /help
 func (bot *BudgetBot) commandHelp(update *tgbotapi.Update) {
-	text := "Available commands:\n/start - Welcome message\n/help - Show this help"
+	text := constants.HelpMessage
 	bot.sendReply(update, text)
 }
 
-// Неизвестная команда
 func (bot *BudgetBot) commandUnknown(update *tgbotapi.Update) {
 	text := "Sorry, I don't know this command. Use /help"
 	bot.sendReply(update, text)
 }
 
-// Отправка ответа
 func (bot *BudgetBot) sendReply(update *tgbotapi.Update, text string) {
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 	msg.ReplyToMessageID = update.Message.MessageID
