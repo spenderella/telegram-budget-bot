@@ -1,18 +1,21 @@
 package repositories
 
 import (
+	"database/sql"
 	"log"
 
 	"telegram-finance-bot/internal/models"
 )
 
 type ExpenseRepository struct {
-	Expenses map[int64][]models.Expense // userID -> список трат
+	Expenses map[int64][]models.Expense //deprecate
+	db       *sql.DB
 }
 
-func NewExpenseRepository() *ExpenseRepository {
+func NewExpenseRepository(db *sql.DB) *ExpenseRepository {
 	return &ExpenseRepository{
 		Expenses: make(map[int64][]models.Expense),
+		db:       db,
 	}
 }
 

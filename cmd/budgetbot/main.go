@@ -7,25 +7,34 @@ import (
 
 	"telegram-finance-bot/internal/api"
 	"telegram-finance-bot/internal/configs"
+	"telegram-finance-bot/internal/database"
 	"telegram-finance-bot/internal/repositories"
 	"telegram-finance-bot/internal/services"
 )
 
-func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
-	}
-}
-
 func main() {
 
-	config, err := configs.LoadConfig("internal/configs/configs.json")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
+	config, err := configs.LoadConfig("internal/configs/configs.json")
 	if err != nil {
 		log.Fatal("Failed to read configs:", err)
 	}
 
-	expenseRepo := repositories.NewExpenseRepository()
+	db, err := database.Connect()
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+	defer db.Close()
+
+	if err := database.RunMigrations(db); err != nil {
+		log.Fatal("Failed to run migrations:", err)
+	}
+
+	expenseRepo := repositories.NewExpenseRepository(db)
 	expenseService := services.NewExpenseService(expenseRepo)
 
 	bot, err := api.NewBudgetBot(config, expenseService)
