@@ -34,13 +34,13 @@ const (
 
 	InsertDefaultCategories = `
     INSERT INTO categories (name) VALUES 
-        ('Food'),
-        ('Tranportasion'),
-        ('House'),
-        ('Health'),
-        ('Entertaiment'),
-        ('Personal'),
-        ('Other')
+        ('food'),
+        ('tranportasion'),
+        ('house'),
+        ('health'),
+        ('entertaiment'),
+        ('personal'),
+        ('other')
     ON CONFLICT (name) DO NOTHING;
     `
 )

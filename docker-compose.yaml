@@ -4,9 +4,9 @@ services:
     image: postgres:15
     container_name: budget_bot_db
     environment:
-      POSTGRES_DB: budget_bot_db
-      POSTGRES_USER: bot_user
-      POSTGRES_PASSWORD: bot_password
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:

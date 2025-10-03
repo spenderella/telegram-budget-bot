@@ -34,8 +34,13 @@ func main() {
 		log.Fatal("Failed to run migrations:", err)
 	}
 
+	categoryRepo := repositories.NewCategoryRepository(db)
+	userRepo := repositories.NewUserRepository(db)
 	expenseRepo := repositories.NewExpenseRepository(db)
-	expenseService := services.NewExpenseService(expenseRepo)
+
+	categoryService := services.NewCategoryService(categoryRepo)
+	userService := services.NewUserService(userRepo)
+	expenseService := services.NewExpenseService(expenseRepo, userService, categoryService)
 
 	bot, err := api.NewBudgetBot(config, expenseService)
 	if err != nil {

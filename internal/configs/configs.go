@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"os"
 
+	"telegram-finance-bot/internal/constants"
 	"telegram-finance-bot/internal/errors"
-)
-
-const (
-	MaxGetExpensesLimit = 500
 )
 
 type Config struct {
@@ -44,8 +41,8 @@ func LoadConfig(configPath string) (*Config, error) {
 		return nil, errors.ErrInvalidGetExpenseLimit
 	}
 
-	if config.GetExpenseLimit > MaxGetExpensesLimit {
-		return nil, errors.ErrGetExpenseLimitTooLarge(config.GetExpenseLimit, MaxGetExpensesLimit)
+	if config.GetExpenseLimit > constants.MaxGetExpensesLimit {
+		return nil, errors.ErrGetExpenseLimitTooLarge(config.GetExpenseLimit, constants.MaxGetExpensesLimit)
 	}
 
 	return &config, nil

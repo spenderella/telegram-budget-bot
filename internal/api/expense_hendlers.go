@@ -10,7 +10,8 @@ import (
 func (bot *BudgetBot) commandAddExpense(update *tgbotapi.Update) {
 
 	userTime := time.Unix(int64(update.Message.Date), 0)
-	userID := update.Message.From.ID
+	userTgID := update.Message.From.ID
+	username := update.Message.From.UserName
 
 	amount, category, err := parseAddExpenseCommand(update.Message.Text)
 	if err != nil {
@@ -18,9 +19,9 @@ func (bot *BudgetBot) commandAddExpense(update *tgbotapi.Update) {
 		return
 	}
 
-	err = bot.expenseService.AddExpense(userID, amount, category, userTime)
+	err = bot.expenseService.AddExpense(userTgID, username, amount, category, userTime)
 	if err != nil {
-		bot.sendReply(update, "Failed to save expense. Please try again later.")
+		bot.sendReply(update, "Failed to save expense: "+err.Error())
 		return
 	}
 
@@ -30,9 +31,9 @@ func (bot *BudgetBot) commandAddExpense(update *tgbotapi.Update) {
 
 func (bot *BudgetBot) commandGetExpenses(update *tgbotapi.Update) {
 
-	userID := update.Message.From.ID
+	userTgID := update.Message.From.ID
 	filter := models.ExpenseFilter{
-		UserID: userID,
+		UserID: userTgID,
 		Limit:  &bot.config.GetExpenseLimit,
 	}
 

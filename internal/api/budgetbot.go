@@ -67,7 +67,7 @@ func (bot *BudgetBot) formatExpenses(expenses []models.Expense) string {
 		line := fmt.Sprintf("Amount: %.2f %s Category: %s\n Date: %s\n\n",
 			expense.Amount,
 			expense.Currency,
-			expense.Category,
+			expense.Category.Name,
 			dateStr)
 
 		builder.WriteString(line)
