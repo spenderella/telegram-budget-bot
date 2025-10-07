@@ -11,9 +11,9 @@ type Expense struct {
 }
 
 type ExpenseFilter struct {
-	UserID int64
+	UserTgID int64
 	//Category *string
-	//DateFrom *time.Time
-	//DateTo   *time.Time
-	Limit *int
+	DateFrom *time.Time
+	DateTo   *time.Time
+	Limit    *int
 }

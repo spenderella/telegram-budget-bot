@@ -38,16 +38,18 @@ func (r *ExpenseRepository) Save(expense models.Expense) error {
 func (r *ExpenseRepository) GetExpenses(filter models.ExpenseFilter) ([]models.Expense, error) {
 
 	query := `
-        SELECT u.id, c.id, c.name, e.amount, e.currency, e.created_at 
-		FROM expenses e 
-		LEFT JOIN users u ON e.user_id = u.id
+        SELECT e.user_id, c.id, c.name, e.amount, e.currency, e.created_at 
+		FROM expenses e
+		LEFT JOIN users u ON e.user_id = u.id 
 		LEFT JOIN categories c ON e.category_id = c.id
 		WHERE u.telegram_id = $1
+			AND e.created_at >= $2
+          	AND e.created_at <= $3
 		ORDER BY e.created_at DESC
-		LIMIT $2
+		LIMIT $4
     `
 
-	rows, err := r.db.Query(query, filter.UserID, filter.Limit)
+	rows, err := r.db.Query(query, filter.UserTgID, filter.DateFrom, filter.DateTo, filter.Limit)
 
 	if err != nil {
 		return nil, err

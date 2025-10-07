@@ -1,6 +1,7 @@
 package api
 
 import (
+	"strings"
 	"telegram-finance-bot/internal/models"
 	"time"
 
@@ -9,7 +10,6 @@ import (
 
 func (bot *BudgetBot) commandAddExpense(update *tgbotapi.Update) {
 
-	userTime := time.Unix(int64(update.Message.Date), 0)
 	userTgID := update.Message.From.ID
 	username := update.Message.From.UserName
 
@@ -19,7 +19,7 @@ func (bot *BudgetBot) commandAddExpense(update *tgbotapi.Update) {
 		return
 	}
 
-	err = bot.expenseService.AddExpense(userTgID, username, amount, category, userTime)
+	err = bot.expenseService.AddExpense(userTgID, username, amount, category)
 	if err != nil {
 		bot.sendReply(update, "Failed to save expense: "+err.Error())
 		return
@@ -32,9 +32,22 @@ func (bot *BudgetBot) commandAddExpense(update *tgbotapi.Update) {
 func (bot *BudgetBot) commandGetExpenses(update *tgbotapi.Update) {
 
 	userTgID := update.Message.From.ID
+	parts := strings.Fields(update.Message.Text)
+	dateFrom := time.Time{} // 0001-01-01
+	dateTo := time.Now().UTC()
+
 	filter := models.ExpenseFilter{
-		UserID: userTgID,
-		Limit:  &bot.config.GetExpenseLimit,
+		UserTgID: userTgID,
+		Limit:    &bot.config.GetExpenseLimit,
+		DateFrom: &dateFrom,
+		DateTo:   &dateTo,
+	}
+
+	if len(parts) > 1 {
+		period := parts[1] // "today", "week", "month"
+		dateFrom, dateTo := bot.parseGetExpensesCommand(period)
+		filter.DateFrom = &dateFrom
+		filter.DateTo = &dateTo
 	}
 
 	expenses, err := bot.expenseService.GetExpenses(filter)

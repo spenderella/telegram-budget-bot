@@ -3,7 +3,8 @@ package services
 import (
 	"database/sql"
 	"log"
-	"time"
+
+	//"time"
 
 	"telegram-finance-bot/internal/constants"
 	"telegram-finance-bot/internal/errors"
@@ -26,7 +27,7 @@ func NewExpenseService(
 	}
 }
 
-func (s *ExpenseService) AddExpense(telegramID int64, username string, amount float64, categoryName string, date time.Time) error {
+func (s *ExpenseService) AddExpense(telegramID int64, username string, amount float64, categoryName string) error {
 
 	currency := constants.DefaultCurrency
 	user, err := s.UserService.GetOrCreate(telegramID, username)
@@ -47,7 +48,6 @@ func (s *ExpenseService) AddExpense(telegramID int64, username string, amount fl
 		UserID:   user.ID,
 		Amount:   amount,
 		Category: category,
-		Date:     date,
 		Currency: currency,
 	}
 

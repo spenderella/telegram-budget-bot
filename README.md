@@ -38,6 +38,10 @@ Available commands:
 /start - Welcome message
 /help - Show available commands
 /add_expense <amount> <category> - Add new expense with amount and category
-/get_expences - Get your expenses (limit 50)
+/get_expenses - Get your expenses (limit 50). Optional: today, week, month
+
+Examples: 
+/add_expense 25.50 coffee
+/get_expenses today
 
 
