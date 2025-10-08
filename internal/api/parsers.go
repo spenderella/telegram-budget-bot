@@ -30,7 +30,7 @@ func parseAddExpenseCommand(text string) (float64, string, error) {
 	return amount, category, nil
 }
 
-func (bot *BudgetBot) parseGetExpensesCommand(period string) (time.Time, time.Time) {
+func (bot *BudgetBot) getPeriodDates(period string) (time.Time, time.Time) {
 	now := time.Now().UTC()
 
 	switch period {

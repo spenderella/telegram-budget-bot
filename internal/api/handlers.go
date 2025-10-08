@@ -26,6 +26,8 @@ func (bot *BudgetBot) handleMessage(update *tgbotapi.Update) {
 		bot.commandGetExpenses(update)
 	case constants.CmdGetCategories:
 		bot.commandGetCategories(update)
+	case constants.CmdGetStat:
+		bot.commandGetStatistics(update)
 	default:
 		bot.commandUnknown(update)
 	}

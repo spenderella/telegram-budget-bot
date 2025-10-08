@@ -62,8 +62,17 @@ func (s *ExpenseService) AddExpense(telegramID int64, username string, amount fl
 func (s *ExpenseService) GetExpenses(filter models.ExpenseFilter) ([]models.Expense, error) {
 	expenses, err := s.Repository.GetExpenses(filter)
 	if err != nil {
-		return nil, errors.ErrFailedToGetExpenses(err)
+		return nil, errors.ErrFailedToGetData(err)
 	}
 
 	return expenses, nil
+}
+
+func (s *ExpenseService) GetStat(filter models.ExpenseFilter) ([]models.CategoryExpenses, error) {
+	stat, err := s.Repository.GetStat(filter)
+	if err != nil {
+		return nil, errors.ErrFailedToGetData(err)
+	}
+
+	return stat, nil
 }

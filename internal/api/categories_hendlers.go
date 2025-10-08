@@ -16,7 +16,7 @@ func (bot *BudgetBot) commandGetCategories(update *tgbotapi.Update) {
 	}
 
 	var builder strings.Builder
-	builder.WriteString("List of categories:\n\n")
+	builder.WriteString("Categories:\n\n")
 
 	for _, category := range categories {
 		builder.WriteString(fmt.Sprintf("%s\n", category.Name))

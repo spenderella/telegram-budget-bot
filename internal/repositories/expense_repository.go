@@ -49,7 +49,7 @@ func (r *ExpenseRepository) GetExpenses(filter models.ExpenseFilter) ([]models.E
 		LIMIT $4
     `
 
-	rows, err := r.db.Query(query, filter.UserTgID, filter.DateFrom, filter.DateTo, filter.Limit)
+	rows, err := r.db.Query(query, filter.UserTgID, *filter.DateFrom, *filter.DateTo, *filter.Limit)
 
 	if err != nil {
 		return nil, err
@@ -82,4 +82,51 @@ func (r *ExpenseRepository) GetExpenses(filter models.ExpenseFilter) ([]models.E
 	}
 
 	return expenses, nil
+}
+
+func (r *ExpenseRepository) GetStat(filter models.ExpenseFilter) ([]models.CategoryExpenses, error) {
+
+	query := `
+        SELECT c.id, c.name, sum(e.amount), currency
+		FROM expenses e
+		LEFT JOIN users u ON e.user_id = u.id 
+		LEFT JOIN categories c ON e.category_id = c.id
+		WHERE u.telegram_id = $1
+			AND e.created_at >= $2
+          	AND e.created_at <= $3
+		GROUP BY c.id, c.name, currency
+		LIMIT $4
+    `
+
+	rows, err := r.db.Query(query, filter.UserTgID, *filter.DateFrom, *filter.DateTo, *filter.Limit)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var stats []models.CategoryExpenses
+
+	for rows.Next() {
+		var sumByCategory models.CategoryExpenses
+		sumByCategory.Category = &models.Category{}
+
+		err := rows.Scan(
+			&sumByCategory.Category.ID,
+			&sumByCategory.Category.Name,
+			&sumByCategory.Total,
+			&sumByCategory.TotalCurrency,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		stats = append(stats, sumByCategory)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return stats, nil
 }
