@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+
 	//"telegram-finance-bot/internal/models"
 	"telegram-finance-bot/internal/constants"
 
@@ -23,6 +24,8 @@ func (bot *BudgetBot) handleMessage(update *tgbotapi.Update) {
 		bot.commandAddExpense(update)
 	case constants.CmdGetExpenses:
 		bot.commandGetExpenses(update)
+	case constants.CmdGetCategories:
+		bot.commandGetCategories(update)
 	default:
 		bot.commandUnknown(update)
 	}

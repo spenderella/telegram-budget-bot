@@ -25,5 +25,42 @@ func (r *CategoryRepository) GetCategory(name string) (*models.Category, error) 
 		&category.ID, &category.Name,
 	)
 
-	return &category, err
+	if err != nil {
+		return nil, err
+	}
+
+	return &category, nil
+}
+
+func (r *CategoryRepository) GetCategories() ([]models.Category, error) {
+
+	query := "SELECT id, name FROM categories LIMIT 100"
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var categories []models.Category
+
+	for rows.Next() {
+		var cat models.Category
+
+		err := rows.Scan(
+			&cat.ID,
+			&cat.Name,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		categories = append(categories, cat)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return categories, nil
 }

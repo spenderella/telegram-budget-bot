@@ -24,3 +24,7 @@ func (s *CategoryService) GetCategory(name string) (*models.Category, error) {
 
 	return category, nil
 }
+
+func (s *CategoryService) GetCategories() ([]models.Category, error) {
+	return s.categoryRepo.GetCategories()
+}

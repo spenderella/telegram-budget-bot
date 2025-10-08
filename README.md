@@ -7,7 +7,8 @@ Personal finance tracking bot for Telegram built with Go.
 ## Features
 
 - Add expense: amount and category
-- Get your expenses
+- Get your expenses. Optional filter by time period: today, week or month
+- Get all existing categories
 
 ## Prerequisites
 
@@ -39,6 +40,7 @@ Available commands:
 /help - Show available commands
 /add_expense <amount> <category> - Add new expense with amount and category
 /get_expenses - Get your expenses (limit 50). Optional: today, week, month
+/get_categories - Get all categories
 
 Examples: 
 /add_expense 25.50 coffee

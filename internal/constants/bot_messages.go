@@ -7,6 +7,7 @@ Available commands:
 /help - Show commands
 /add_expense <amount> <category> - Add expense
 /get_expenses - Get your expenses (limit 50). Optional: today, week, month
+/get_categories - Get all categories
 
 Examples: 
 /add_expense 25.50 coffee
@@ -18,6 +19,7 @@ Examples:
 
 /add_expense <amount> <category> - Add expense
 /get_expenses - Get your expenses (limit 50). Optional: today, week, month
+/get_categories - Get all categories
 
 Examples: 
 /add_expense 25.50 coffee
