@@ -4,25 +4,36 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"telegram-finance-bot/internal/errors"
 
 	_ "github.com/lib/pq"
 )
 
 func Connect() (*sql.DB, error) {
 
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	dbSSLMode := os.Getenv("DB_SSLMODE")
+	requiredEnvVars := []string{"DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME", "DB_SSLMODE"}
+
+	envVars := make(map[string]string)
+	var missingVars []string
+	for _, varName := range requiredEnvVars {
+		if os.Getenv(varName) == "" {
+			missingVars = append(missingVars, varName)
+		} else {
+			envVars[varName] = os.Getenv(varName)
+		}
+	}
+
+	if len(missingVars) > 0 {
+		return nil, errors.ErrMissingEnvVars(missingVars)
+	}
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		dbHost, dbPort, dbUser, dbPassword, dbName, dbSSLMode)
-
-	if dsn == "" {
-		return nil, fmt.Errorf("DATABASE_URL not set")
-	}
+		envVars["DB_HOST"],
+		envVars["DB_PORT"],
+		envVars["DB_USER"],
+		envVars["DB_PASSWORD"],
+		envVars["DB_NAME"],
+		envVars["DB_SSLMODE"])
 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
