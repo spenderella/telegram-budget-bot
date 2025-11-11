@@ -1,53 +1,132 @@
 package repositories
 
 import (
-	"log"
+	"database/sql"
+	//"log"
 
 	"telegram-finance-bot/internal/models"
 )
 
 type ExpenseRepository struct {
-	Expenses map[int64][]models.Expense // userID -> список трат
+	//Expenses map[int64][]models.Expense //deprecate
+	db *sql.DB
 }
 
-func NewExpenseRepository() *ExpenseRepository {
+func NewExpenseRepository(db *sql.DB) *ExpenseRepository {
 	return &ExpenseRepository{
-		Expenses: make(map[int64][]models.Expense),
+		//Expenses: make(map[int64][]models.Expense),
+		db: db,
 	}
 }
 
 func (r *ExpenseRepository) Save(expense models.Expense) error {
+	var expenseId int
+	query := `
+        INSERT INTO expenses (user_id, category_id, amount, currency) 
+        VALUES ($1, $2, $3, $4)
+        RETURNING id
+    `
 
-	if r.Expenses[expense.UserID] == nil {
-		log.Printf("Creating new slice for user %d", expense.UserID)
-		r.Expenses[expense.UserID] = []models.Expense{}
-	}
+	err := r.db.QueryRow(
+		query, expense.UserID, expense.Category.ID, expense.Amount, expense.Currency).Scan(
+		&expenseId)
 
-	r.Expenses[expense.UserID] = append(r.Expenses[expense.UserID], expense)
+	return err
 
-	log.Printf("=== AFTER SAVE ===")
-	log.Printf("Length after: %d", len(r.Expenses[expense.UserID]))
-	log.Printf("All expenses: %v", r.Expenses[expense.UserID])
-
-	return nil
 }
 
 func (r *ExpenseRepository) GetExpenses(filter models.ExpenseFilter) ([]models.Expense, error) {
-	userExpenses, exists := r.Expenses[filter.UserID]
 
-	if !exists {
-		return []models.Expense{}, nil
+	query := `
+        SELECT e.user_id, c.id, c.name, e.amount, e.currency, e.created_at 
+		FROM expenses e
+		LEFT JOIN users u ON e.user_id = u.id 
+		LEFT JOIN categories c ON e.category_id = c.id
+		WHERE u.telegram_id = $1
+			AND e.created_at >= $2
+          	AND e.created_at <= $3
+		ORDER BY e.created_at DESC
+		LIMIT $4
+    `
+
+	rows, err := r.db.Query(query, filter.UserTgID, *filter.DateFrom, *filter.DateTo, *filter.Limit)
+
+	if err != nil {
+		return nil, err
 	}
+	defer rows.Close()
 
-	var result []models.Expense
+	var expenses []models.Expense
 
-	for _, expense := range userExpenses {
+	for rows.Next() {
+		var exp models.Expense
+		exp.Category = &models.Category{}
 
-		result = append(result, expense)
-
-		if filter.Limit == nil || len(result) >= *filter.Limit {
-			break
+		err := rows.Scan(
+			&exp.UserID,
+			&exp.Category.ID,
+			&exp.Category.Name,
+			&exp.Amount,
+			&exp.Currency,
+			&exp.Date,
+		)
+		if err != nil {
+			return nil, err
 		}
+
+		expenses = append(expenses, exp)
 	}
-	return result, nil
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return expenses, nil
+}
+
+func (r *ExpenseRepository) GetStat(filter models.ExpenseFilter) ([]models.CategoryExpenses, error) {
+
+	query := `
+        SELECT c.id, c.name, sum(e.amount), currency
+		FROM expenses e
+		LEFT JOIN users u ON e.user_id = u.id 
+		LEFT JOIN categories c ON e.category_id = c.id
+		WHERE u.telegram_id = $1
+			AND e.created_at >= $2
+          	AND e.created_at <= $3
+		GROUP BY c.id, c.name, currency
+		LIMIT $4
+    `
+
+	rows, err := r.db.Query(query, filter.UserTgID, *filter.DateFrom, *filter.DateTo, *filter.Limit)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var stats []models.CategoryExpenses
+
+	for rows.Next() {
+		var sumByCategory models.CategoryExpenses
+		sumByCategory.Category = &models.Category{}
+
+		err := rows.Scan(
+			&sumByCategory.Category.ID,
+			&sumByCategory.Category.Name,
+			&sumByCategory.Total,
+			&sumByCategory.TotalCurrency,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		stats = append(stats, sumByCategory)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return stats, nil
 }

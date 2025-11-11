@@ -5,15 +5,15 @@ import "time"
 type Expense struct {
 	Date     time.Time
 	Amount   float64
-	UserID   int64
+	UserID   int
 	Currency string
-	Category string
+	Category *Category
 }
 
 type ExpenseFilter struct {
-	UserID int64
+	UserTgID int64
 	//Category *string
-	//DateFrom *time.Time
-	//DateTo   *time.Time
-	Limit *int
+	DateFrom *time.Time
+	DateTo   *time.Time
+	Limit    *int
 }

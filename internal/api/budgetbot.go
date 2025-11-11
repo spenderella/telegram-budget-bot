@@ -67,7 +67,7 @@ func (bot *BudgetBot) formatExpenses(expenses []models.Expense) string {
 		line := fmt.Sprintf("Amount: %.2f %s Category: %s\n Date: %s\n\n",
 			expense.Amount,
 			expense.Currency,
-			expense.Category,
+			expense.Category.Name,
 			dateStr)
 
 		builder.WriteString(line)
@@ -75,5 +75,24 @@ func (bot *BudgetBot) formatExpenses(expenses []models.Expense) string {
 	}
 
 	builder.WriteString(fmt.Sprintf("Total amount: %.2f", total))
+	return builder.String()
+}
+
+func (bot *BudgetBot) formatCategoriesStat(stat []models.CategoryExpenses) string {
+	if len(stat) == 0 {
+		return "📊 Data not found"
+	}
+
+	var builder strings.Builder
+	builder.WriteString("📊 Statistics for categories:\n\n")
+
+	for _, catStat := range stat {
+
+		builder.WriteString(fmt.Sprintf("Category: %s   Total: %.2f %s\n",
+			catStat.Category.Name,
+			catStat.Total,
+			catStat.TotalCurrency))
+	}
+
 	return builder.String()
 }

@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-func ErrFailedToGetExpenses(err error) error {
-	return fmt.Errorf("failed to get expenses: %w", err)
+func ErrFailedToGetData(err error) error {
+	return fmt.Errorf("failed to get data: %w", err)
 }
 
 func ErrFailedToSaveExpenses(err error) error {

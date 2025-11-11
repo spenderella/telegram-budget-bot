@@ -1,38 +1,59 @@
 package services
 
 import (
+	"database/sql"
 	"log"
-	"time"
 
+	//"time"
+
+	"telegram-finance-bot/internal/constants"
 	"telegram-finance-bot/internal/errors"
 	"telegram-finance-bot/internal/models"
 	"telegram-finance-bot/internal/repositories"
 )
 
 type ExpenseService struct {
-	Repository *repositories.ExpenseRepository
+	Repository      *repositories.ExpenseRepository
+	UserService     *UserService
+	CategoryService *CategoryService
 }
 
-func NewExpenseService(repository *repositories.ExpenseRepository) *ExpenseService {
+func NewExpenseService(
+	repository *repositories.ExpenseRepository, userService *UserService, categoryService *CategoryService) *ExpenseService {
 	return &ExpenseService{
-		Repository: repository,
+		Repository:      repository,
+		UserService:     userService,
+		CategoryService: categoryService,
 	}
 }
 
-func (s *ExpenseService) AddExpense(userID int64, amount float64, category string, date time.Time) error {
+func (s *ExpenseService) AddExpense(telegramID int64, username string, amount float64, categoryName string) error {
 
-	currency := defaultCurrency
+	currency := constants.DefaultCurrency
+	user, err := s.UserService.GetOrCreate(telegramID, username)
+	if err != nil {
+		return err
+	}
+
+	category, err := s.CategoryService.GetCategory(categoryName)
+	if err == sql.ErrNoRows {
+		return errors.ErrInvalidCategoryName
+	}
+
+	if err != nil {
+		return err
+	}
+
 	expense := models.Expense{
-		UserID:   userID,
+		UserID:   user.ID,
 		Amount:   amount,
 		Category: category,
-		Date:     date,
 		Currency: currency,
 	}
 
-	err := s.Repository.Save(expense)
+	err = s.Repository.Save(expense)
 	if err != nil {
-		log.Printf("Error saving expense for user %d: %v", userID, err)
+		log.Printf("Error saving expense for user %d: %v", telegramID, err)
 		return errors.ErrFailedToSaveExpenses(err)
 	}
 	return nil
@@ -41,8 +62,17 @@ func (s *ExpenseService) AddExpense(userID int64, amount float64, category strin
 func (s *ExpenseService) GetExpenses(filter models.ExpenseFilter) ([]models.Expense, error) {
 	expenses, err := s.Repository.GetExpenses(filter)
 	if err != nil {
-		return nil, errors.ErrFailedToGetExpenses(err)
+		return nil, errors.ErrFailedToGetData(err)
 	}
 
 	return expenses, nil
+}
+
+func (s *ExpenseService) GetStat(filter models.ExpenseFilter) ([]models.CategoryExpenses, error) {
+	stat, err := s.Repository.GetStat(filter)
+	if err != nil {
+		return nil, errors.ErrFailedToGetData(err)
+	}
+
+	return stat, nil
 }
