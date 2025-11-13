@@ -7,29 +7,42 @@ import (
 
 	"telegram-finance-bot/internal/configs"
 	"telegram-finance-bot/internal/models"
-	"telegram-finance-bot/internal/services"
+
+	//"telegram-finance-bot/internal/services"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-type BudgetBot struct {
-	config         *configs.Config
-	debug          bool
-	api            *tgbotapi.BotAPI
-	expenseService *services.ExpenseService
+type ExpenseService interface {
+	AddExpense(telegramID int64, username string, amount float64, categoryName string) error
+	GetExpenses(filter models.ExpenseFilter) ([]models.Expense, error)
+	GetStat(filter models.ExpenseFilter) ([]models.CategoryExpenses, error)
 }
 
-func NewBudgetBot(config *configs.Config, expenseService *services.ExpenseService) (*BudgetBot, error) {
+type CategoryService interface {
+	GetCategories() ([]models.Category, error)
+}
+
+type BudgetBot struct {
+	config          *configs.Config
+	debug           bool
+	api             *tgbotapi.BotAPI
+	expenseService  ExpenseService
+	categoryService CategoryService
+}
+
+func NewBudgetBot(config *configs.Config, expenseService ExpenseService, categoryService CategoryService) (*BudgetBot, error) {
 	botAPI, err := tgbotapi.NewBotAPI(config.BotToken)
 	if err != nil {
 		return nil, err
 	}
 
 	return &BudgetBot{
-		config:         config,
-		debug:          true,
-		api:            botAPI,
-		expenseService: expenseService,
+		config:          config,
+		debug:           true,
+		api:             botAPI,
+		expenseService:  expenseService,
+		categoryService: categoryService,
 	}, nil
 }
 

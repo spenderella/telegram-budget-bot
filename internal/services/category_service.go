@@ -4,14 +4,19 @@ import (
 	//"database/sql"
 
 	"telegram-finance-bot/internal/models"
-	"telegram-finance-bot/internal/repositories"
+	//"telegram-finance-bot/internal/repositories"
 )
 
-type CategoryService struct {
-	categoryRepo *repositories.CategoryRepository
+type ICategoryRepository interface {
+	GetCategory(name string) (*models.Category, error)
+	GetCategories() ([]models.Category, error)
 }
 
-func NewCategoryService(categoryRepo *repositories.CategoryRepository) *CategoryService {
+type CategoryService struct {
+	categoryRepo ICategoryRepository
+}
+
+func NewCategoryService(categoryRepo ICategoryRepository) *CategoryService {
 	return &CategoryService{categoryRepo: categoryRepo}
 }
 

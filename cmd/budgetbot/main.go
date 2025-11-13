@@ -42,7 +42,7 @@ func main() {
 	userService := services.NewUserService(userRepo)
 	expenseService := services.NewExpenseService(expenseRepo, userService, categoryService)
 
-	bot, err := api.NewBudgetBot(config, expenseService)
+	bot, err := api.NewBudgetBot(config, expenseService, categoryService)
 	if err != nil {
 		log.Fatal("Failed to create bot:", err)
 	}
