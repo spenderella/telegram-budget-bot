@@ -59,7 +59,7 @@ func TestCategoryService_GetCategory(t *testing.T) {
 
 		// ASSERT
 		require.Error(t, err)
-		assert.Equal(t, err, expectedError)
+		assert.Equal(t, expectedError, err)
 	})
 }
 
@@ -111,7 +111,7 @@ func TestCategoryService_GetCategories(t *testing.T) {
 		// ASSERT
 
 		require.Error(t, err)
-		assert.Equal(t, err, expectedError)
+		assert.Equal(t, expectedError, err)
 
 	})
 }

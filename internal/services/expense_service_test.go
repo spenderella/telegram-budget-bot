@@ -153,7 +153,7 @@ func TestExpenseService_GetExpenses(t *testing.T) {
 
 		// ASSERT
 		require.NoError(t, err)
-		assert.Equal(t, resultExpenses, testExpenses)
+		assert.Equal(t, testExpenses, resultExpenses)
 	})
 
 	t.Run("get expenses error", func(t *testing.T) {
