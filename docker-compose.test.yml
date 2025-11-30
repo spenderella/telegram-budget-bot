@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: telegram-bot-test-db
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: telegram_bot_test
+    ports:
+      - "5433:5432"  # Different port to not conflict with dev DB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U testuser -d telegram_bot_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

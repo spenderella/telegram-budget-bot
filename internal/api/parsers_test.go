@@ -11,65 +11,73 @@ import (
 )
 
 func Test_parseAddExpenseCommand(t *testing.T) {
-	t.Run("valid input with single word category", func(t *testing.T) {
-		command := "/add_expense 100 food"
+	tests := []struct {
+		name         string
+		command      string
+		wantAmount   float64
+		wantCategory string
+		wantErr      error
+	}{
+		{
+			name:         "valid input with single word category",
+			command:      "/add_expense 100 food",
+			wantAmount:   100.0,
+			wantCategory: "food",
+			wantErr:      nil,
+		},
+		{
+			name:         "valid input with multi-word category",
+			command:      "/add_expense 100 public transport",
+			wantAmount:   100.0,
+			wantCategory: "public transport",
+			wantErr:      nil,
+		},
+		{
+			name:         "invalid format - missing category",
+			command:      "/add_expense 100",
+			wantAmount:   0,
+			wantCategory: "",
+			wantErr:      errors.ErrInvalidCommandFormat("/add_expense"),
+		},
+		{
+			name:         "invalid amount format",
+			command:      "/add_expense abc food",
+			wantAmount:   0,
+			wantCategory: "",
+			wantErr:      errors.ErrInvalidAmountFormat,
+		},
+		{
+			name:         "negative amount",
+			command:      "/add_expense -50 food",
+			wantAmount:   0,
+			wantCategory: "",
+			wantErr:      errors.ErrAmountMustBePositive,
+		},
+		{
+			name:         "zero amount",
+			command:      "/add_expense 0 food",
+			wantAmount:   0,
+			wantCategory: "",
+			wantErr:      errors.ErrAmountMustBePositive,
+		},
+	}
 
-		amount, category, err := parseAddExpenseCommand(command)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// ACT
+			amount, category, err := parseAddExpenseCommand(tt.command)
 
-		require.NoError(t, err)
-		assert.Equal(t, 100.0, amount)
-		assert.Equal(t, "food", category)
-	})
-
-	t.Run("valid input with multi-word category", func(t *testing.T) {
-		command := "/add_expense 100 public transport"
-
-		amount, category, err := parseAddExpenseCommand(command)
-
-		require.NoError(t, err)
-		assert.Equal(t, 100.0, amount)
-		assert.Equal(t, "public transport", category)
-	})
-
-	t.Run("invalid format - missing category", func(t *testing.T) {
-		command := "/add_expense 100"
-
-		_, _, err := parseAddExpenseCommand(command)
-
-		require.Error(t, err)
-		// Check that it returns ErrInvalidCommandFormat
-		assert.Contains(t, err.Error(), "Invalid format")
-	})
-
-	t.Run("invalid amount format", func(t *testing.T) {
-		command := "/add_expense abc food"
-
-		_, _, err := parseAddExpenseCommand(command)
-
-		require.Error(t, err)
-		// Check that it's specifically the invalid amount error
-		assert.Equal(t, errors.ErrInvalidAmountFormat, err)
-	})
-
-	t.Run("negative amount", func(t *testing.T) {
-		command := "/add_expense -50 food"
-
-		_, _, err := parseAddExpenseCommand(command)
-
-		require.Error(t, err)
-		// Check that it's the "must be positive" error
-		assert.Equal(t, errors.ErrAmountMustBePositive, err)
-	})
-
-	t.Run("zero amount", func(t *testing.T) {
-		command := "/add_expense 0 food"
-
-		_, _, err := parseAddExpenseCommand(command)
-
-		require.Error(t, err)
-		// Check that it's the "must be positive" error
-		assert.Equal(t, errors.ErrAmountMustBePositive, err)
-	})
+			// ASSERT
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				assert.Equal(t, tt.wantErr, err)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, tt.wantAmount, amount)
+				assert.Equal(t, tt.wantCategory, category)
+			}
+		})
+	}
 }
 
 func Test_getPeriodDates(t *testing.T) {

@@ -12,14 +12,19 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
-	migrations := map[string]string{
-		"001_create_users_table":      constants.CreateUsersTable,
-		"002_create_categories_table": constants.CreateCategoriesTable,
-		"003_create_expenses_table":   constants.CreateExpensesTable,
-		"004_insert_categories":       constants.InsertDefaultCategories,
+	migrations := []struct {
+		version string
+		query   string
+	}{
+		{"001_create_users_table", constants.CreateUsersTable},
+		{"002_create_categories_table", constants.CreateCategoriesTable},
+		{"003_create_expenses_table", constants.CreateExpensesTable},
+		{"004_insert_categories", constants.InsertDefaultCategories},
 	}
 
-	for version, sqlQuery := range migrations {
+	for _, migration := range migrations {
+		version := migration.version
+		sqlQuery := migration.query
 		var count int
 		err := db.QueryRow("SELECT COUNT(*) FROM schema_migrations WHERE version = $1", version).Scan(&count)
 		if err != nil {
