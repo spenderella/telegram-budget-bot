@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCategoryService_GetCategory(t *testing.T) {
+func TestCategoryServiceGetCategory(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// ARRANGE
 		ctrl := gomock.NewController(t)
@@ -63,7 +63,7 @@ func TestCategoryService_GetCategory(t *testing.T) {
 	})
 }
 
-func TestCategoryService_GetCategories(t *testing.T) {
+func TestCategoryServiceGetCategories(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// ARRANGE
 		ctrl := gomock.NewController(t)

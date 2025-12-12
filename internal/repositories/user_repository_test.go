@@ -14,8 +14,8 @@ type UserRepositoryTestSuite struct {
 	RepositoryTestSuite
 }
 
-// Test_Create_Success tests successful user creation
-func (s *UserRepositoryTestSuite) Test_Create_Success() {
+// TestCreateSuccess tests successful user creation
+func (s *UserRepositoryTestSuite) TestCreateSuccess() {
 	// ACT
 	user, err := s.UserRepo.Create(12345, "testuser")
 
@@ -26,8 +26,8 @@ func (s *UserRepositoryTestSuite) Test_Create_Success() {
 	assert.Equal(s.T(), "testuser", user.Username)
 }
 
-// Test_Create_DuplicateTelegramID tests that duplicate telegram_id fails
-func (s *UserRepositoryTestSuite) Test_Create_DuplicateTelegramID() {
+// TestCreateDuplicateTelegramID tests that duplicate telegram_id fails
+func (s *UserRepositoryTestSuite) TestCreateDuplicateTelegramID() {
 	// ARRANGE - create first user
 	_, err := s.UserRepo.Create(99999, "user1")
 	require.NoError(s.T(), err)
@@ -40,8 +40,8 @@ func (s *UserRepositoryTestSuite) Test_Create_DuplicateTelegramID() {
 	assert.Contains(s.T(), err.Error(), "duplicate key value", "Should be unique constraint violation")
 }
 
-// Test_GetUser_Existing tests retrieving an existing user
-func (s *UserRepositoryTestSuite) Test_GetUser_Existing() {
+// TestGetUserExisting tests retrieving an existing user
+func (s *UserRepositoryTestSuite) TestGetUserExisting() {
 	// ARRANGE - create a user first
 	createdUser, err := s.UserRepo.Create(54321, "existinguser")
 	require.NoError(s.T(), err)
@@ -56,8 +56,8 @@ func (s *UserRepositoryTestSuite) Test_GetUser_Existing() {
 	assert.Equal(s.T(), "existinguser", user.Username)
 }
 
-// Test_GetUser_NotFound tests that non-existing user returns sql.ErrNoRows
-func (s *UserRepositoryTestSuite) Test_GetUser_NotFound() {
+// TestGetUserNotFound tests that non-existing user returns sql.ErrNoRows
+func (s *UserRepositoryTestSuite) TestGetUserNotFound() {
 	// ACT
 	user, err := s.UserRepo.GetUser(99999)
 
@@ -67,8 +67,8 @@ func (s *UserRepositoryTestSuite) Test_GetUser_NotFound() {
 	assert.Nil(s.T(), user, "User should be nil when not found")
 }
 
-// Test_Integration_CreateAndRetrieveMultiple verifies full flow with multiple users
-func (s *UserRepositoryTestSuite) Test_Integration_CreateAndRetrieveMultiple() {
+// TestIntegrationCreateAndRetrieveMultiple verifies full flow with multiple users
+func (s *UserRepositoryTestSuite) TestIntegrationCreateAndRetrieveMultiple() {
 	// Create multiple users
 	users := []struct {
 		telegramID int64

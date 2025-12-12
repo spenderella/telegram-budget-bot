@@ -16,7 +16,7 @@ import (
 
 const testTelegramID int64 = 1234
 
-func TestUserService_GetOrCreate(t *testing.T) {
+func TestUserServiceGetOrCreate(t *testing.T) {
 	t.Run("user exist", func(t *testing.T) {
 		// ARRANGE
 		ctrl := gomock.NewController(t)

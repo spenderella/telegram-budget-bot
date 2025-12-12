@@ -11,7 +11,7 @@ import (
 	"telegram-finance-bot/internal/models"
 )
 
-func TestExpenseService_AddExpense(t *testing.T) {
+func TestExpenseServiceAddExpense(t *testing.T) {
 	// Create a "database" of available categories
 	availableCategories := generateTestCategories()
 
@@ -131,7 +131,7 @@ func TestExpenseService_AddExpense(t *testing.T) {
 		assert.Equal(t, userError, err)
 	})
 }
-func TestExpenseService_GetExpenses(t *testing.T) {
+func TestExpenseServiceGetExpenses(t *testing.T) {
 
 	availableCategories := generateTestCategories()
 
@@ -176,7 +176,7 @@ func TestExpenseService_GetExpenses(t *testing.T) {
 		assert.Contains(t, err.Error(), "repository error")
 	})
 }
-func TestExpenseService_GetStats(t *testing.T) {
+func TestExpenseServiceGetStats(t *testing.T) {
 	t.Run("get stats error", func(t *testing.T) {
 		// ARRANGE
 		repositoryError := errors.New("repository error")

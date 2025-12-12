@@ -78,7 +78,7 @@ func (s *ExpenseRepositoryTestSuite) AfterTest(suiteName, testName string) {
 	// Do nothing - keep test data for all tests
 }
 
-func (s *ExpenseRepositoryTestSuite) Test_Save_InvalidUserID() {
+func (s *ExpenseRepositoryTestSuite) TestSaveInvalidUserID() {
 	// ARRANGE
 	expense := models.Expense{
 		UserID:   99999, // non-existent user
@@ -94,7 +94,7 @@ func (s *ExpenseRepositoryTestSuite) Test_Save_InvalidUserID() {
 	require.Error(s.T(), err, "Should fail with foreign key constraint violation")
 }
 
-func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_User1() {
+func (s *ExpenseRepositoryTestSuite) TestGetExpensesUser1() {
 	// ARRANGE
 	yesterday := time.Now().UTC().Add(-24 * time.Hour)
 	tomorrow := time.Now().UTC().Add(24 * time.Hour)
@@ -120,7 +120,7 @@ func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_User1() {
 	}
 }
 
-func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_User2() {
+func (s *ExpenseRepositoryTestSuite) TestGetExpensesUser2() {
 	// ARRANGE
 	yesterday := time.Now().UTC().Add(-24 * time.Hour)
 	tomorrow := time.Now().UTC().Add(24 * time.Hour)
@@ -142,7 +142,7 @@ func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_User2() {
 	assert.Equal(s.T(), s.testUser2.ID, result[0].UserID)
 }
 
-func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_EmptyResult() {
+func (s *ExpenseRepositoryTestSuite) TestGetExpensesEmptyResult() {
 	// ARRANGE
 	// Query far in the past
 	past := time.Now().UTC().Add(-365 * 24 * time.Hour)
@@ -164,7 +164,7 @@ func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_EmptyResult() {
 	assert.Empty(s.T(), result, "Should return empty slice when no expenses in date range")
 }
 
-func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_RespectLimit() {
+func (s *ExpenseRepositoryTestSuite) TestGetExpensesRespectLimit() {
 	// ARRANGE
 	yesterday := time.Now().UTC().Add(-24 * time.Hour)
 	tomorrow := time.Now().UTC().Add(24 * time.Hour)
@@ -185,7 +185,7 @@ func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_RespectLimit() {
 	assert.LessOrEqual(s.T(), len(result), 2, "Should respect limit and return at most 2 expenses")
 }
 
-func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_OrderedByDate() {
+func (s *ExpenseRepositoryTestSuite) TestGetExpensesOrderedByDate() {
 	// ARRANGE
 	yesterday := time.Now().UTC().Add(-24 * time.Hour)
 	tomorrow := time.Now().UTC().Add(24 * time.Hour)
@@ -213,7 +213,7 @@ func (s *ExpenseRepositoryTestSuite) Test_GetExpenses_OrderedByDate() {
 	}
 }
 
-func (s *ExpenseRepositoryTestSuite) Test_GetStat_User1() {
+func (s *ExpenseRepositoryTestSuite) TestGetStatUser1() {
 	// ARRANGE
 	yesterday := time.Now().UTC().Add(-24 * time.Hour)
 	tomorrow := time.Now().UTC().Add(24 * time.Hour)
@@ -251,7 +251,7 @@ func (s *ExpenseRepositoryTestSuite) Test_GetStat_User1() {
 	assert.GreaterOrEqual(s.T(), houseStat.Total, 200.00, "House total should be at least 200")
 }
 
-func (s *ExpenseRepositoryTestSuite) Test_GetStat_EmptyResult() {
+func (s *ExpenseRepositoryTestSuite) TestGetStatEmptyResult() {
 	// ARRANGE
 	// Query far in the past
 	past := time.Now().UTC().Add(-365 * 24 * time.Hour)
@@ -273,7 +273,7 @@ func (s *ExpenseRepositoryTestSuite) Test_GetStat_EmptyResult() {
 	assert.Empty(s.T(), stats, "Should return empty slice when no expenses in date range")
 }
 
-func (s *ExpenseRepositoryTestSuite) Test_GetStat_IsolatedByUser() {
+func (s *ExpenseRepositoryTestSuite) TestGetStatIsolatedByUser() {
 	// ARRANGE
 	yesterday := time.Now().UTC().Add(-24 * time.Hour)
 	tomorrow := time.Now().UTC().Add(24 * time.Hour)

@@ -13,7 +13,7 @@ type CategoryRepositoryTestSuite struct {
 	RepositoryTestSuite
 }
 
-func (s *CategoryRepositoryTestSuite) Test_GetCategory_Success() {
+func (s *CategoryRepositoryTestSuite) TestGetCategorySuccess() {
 	// ACT
 	category, err := s.CategoryRepo.GetCategory("food")
 
@@ -23,7 +23,7 @@ func (s *CategoryRepositoryTestSuite) Test_GetCategory_Success() {
 	assert.Equal(s.T(), "food", category.Name)
 }
 
-func (s *CategoryRepositoryTestSuite) Test_GetCategory_NotFound() {
+func (s *CategoryRepositoryTestSuite) TestGetCategoryNotFound() {
 	// ACT
 	category, err := s.CategoryRepo.GetCategory("nonexistent")
 
@@ -33,7 +33,7 @@ func (s *CategoryRepositoryTestSuite) Test_GetCategory_NotFound() {
 	assert.Nil(s.T(), category, "Category should be nil when not found")
 }
 
-func (s *CategoryRepositoryTestSuite) Test_GetCategories_Success() {
+func (s *CategoryRepositoryTestSuite) TestGetCategoriesSuccess() {
 	// ARRANGE
 	expectedNames := []string{
 		"food",
