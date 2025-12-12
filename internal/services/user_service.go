@@ -4,14 +4,19 @@ import (
 	"database/sql"
 
 	"telegram-finance-bot/internal/models"
-	"telegram-finance-bot/internal/repositories"
+	//"telegram-finance-bot/internal/repositories"
 )
 
-type UserService struct {
-	userRepo *repositories.UserRepository
+type IUserRepository interface {
+	GetUser(telegramID int64) (*models.User, error)
+	Create(telegramID int64, username string) (*models.User, error)
 }
 
-func NewUserService(userRepo *repositories.UserRepository) *UserService {
+type UserService struct {
+	userRepo IUserRepository
+}
+
+func NewUserService(userRepo IUserRepository) *UserService {
 	return &UserService{userRepo: userRepo}
 }
 

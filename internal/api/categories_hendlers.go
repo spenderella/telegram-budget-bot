@@ -9,7 +9,7 @@ import (
 
 func (bot *BudgetBot) commandGetCategories(update *tgbotapi.Update) {
 
-	categories, err := bot.expenseService.CategoryService.GetCategories()
+	categories, err := bot.categoryService.GetCategories()
 	if err != nil {
 		bot.sendReply(update, "Error getting categories: "+err.Error())
 		return

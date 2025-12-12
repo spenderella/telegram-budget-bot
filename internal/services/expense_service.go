@@ -9,17 +9,34 @@ import (
 	"telegram-finance-bot/internal/constants"
 	"telegram-finance-bot/internal/errors"
 	"telegram-finance-bot/internal/models"
-	"telegram-finance-bot/internal/repositories"
+	//"telegram-finance-bot/internal/repositories"
 )
 
+type IExpenseRepository interface {
+	Save(expense models.Expense) error
+	GetExpenses(filter models.ExpenseFilter) ([]models.Expense, error)
+	GetStat(filter models.ExpenseFilter) ([]models.CategoryExpenses, error)
+}
+
+type IUserService interface {
+	GetOrCreate(telegramID int64, username string) (*models.User, error)
+}
+
+type ICategoryService interface {
+	GetCategory(name string) (*models.Category, error)
+	GetCategories() ([]models.Category, error)
+}
+
 type ExpenseService struct {
-	Repository      *repositories.ExpenseRepository
-	UserService     *UserService
-	CategoryService *CategoryService
+	Repository      IExpenseRepository
+	UserService     IUserService
+	CategoryService ICategoryService
 }
 
 func NewExpenseService(
-	repository *repositories.ExpenseRepository, userService *UserService, categoryService *CategoryService) *ExpenseService {
+	repository IExpenseRepository,
+	userService IUserService,
+	categoryService ICategoryService) *ExpenseService {
 	return &ExpenseService{
 		Repository:      repository,
 		UserService:     userService,

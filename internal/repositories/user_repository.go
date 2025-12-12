@@ -23,7 +23,11 @@ func (r *UserRepository) GetUser(telegramID int64) (*models.User, error) {
 		&user.ID, &user.TelegramID, &user.Username,
 	)
 
-	return &user, err
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (r *UserRepository) Create(telegramID int64, username string) (*models.User, error) {
