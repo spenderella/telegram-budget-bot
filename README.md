@@ -25,16 +25,24 @@ Personal finance tracking bot for Telegram built with Go.
 git clone https://github.com/spenderella/telegram-budget-bot.git
 cd telegram-budget-bot 
 ```
-2. Create `.env` file with your configuration:
-```bash
-BOT_TOKEN=your_bot_token_here
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=bot_user
-DB_PASSWORD=bot_password
-DB_NAME=budget_bot_db
-DB_SSLMODE=disable
-```
+2. Create `.env` file with your configuration for production and test databases:
+
+- `BOT_TOKEN` - Telegram Bot API token (from @BotFather)
+- `DB_HOST` - PostgreSQL host (default: localhost)
+- `DB_PORT` - PostgreSQL port (default: 5432)
+- `DB_USER` - PostgreSQL username
+- `DB_PASSWORD` - PostgreSQL password
+- `DB_NAME` - Database name
+- `DB_SSLMODE` - SSL mode (use "disable" for local development)
+
+- `TEST_DB_HOST` - PostgreSQL host (default: localhost)
+- `TEST_DB_PORT` - PostgreSQL port (better not like DB_PORT)
+- `TEST_DB_USER` - PostgreSQL username
+- `TEST_DB_PASSWORD` - PostgreSQL password
+- `TEST_DB_NAME` - Database name
+- `TEST_DB_SSLMODE` - SSL mode (use "disable" for local development)
+
+
 
 3. Start PostgreSQL database with Docker:
 ```bash
@@ -60,15 +68,6 @@ docker-compose down
 ## Database
 
 The bot uses PostgreSQL for storing expenses, categories, and users. Database migrations run automatically on application startup.
-
-**Environment Variables:**
-- `BOT_TOKEN` - Telegram Bot API token (from @BotFather)
-- `DB_HOST` - PostgreSQL host (default: localhost)
-- `DB_PORT` - PostgreSQL port (default: 5432)
-- `DB_USER` - PostgreSQL username
-- `DB_PASSWORD` - PostgreSQL password
-- `DB_NAME` - Database name
-- `DB_SSLMODE` - SSL mode (use "disable" for local development)
 
 **Database Schema:**
 - `users` - Telegram users
