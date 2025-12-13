@@ -36,7 +36,7 @@ cd telegram-budget-bot
 - `DB_SSLMODE` - SSL mode (use "disable" for local development)
 
 - `TEST_DB_HOST` - PostgreSQL host (default: localhost)
-- `TEST_DB_PORT` - PostgreSQL port (better not like DB_PORT)
+- `TEST_DB_PORT` - PostgreSQL port (better not same as DB_PORT)
 - `TEST_DB_USER` - PostgreSQL username
 - `TEST_DB_PASSWORD` - PostgreSQL password
 - `TEST_DB_NAME` - Database name
